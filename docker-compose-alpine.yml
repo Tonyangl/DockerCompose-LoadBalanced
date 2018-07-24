@@ -3,27 +3,36 @@ version: "2"
 
 services:
   # Our main "nodeapp" service which has the express aplication inside
-  tofwebapp1:
+  webapp1: &webapp1
     build:
-      # Look for the Dockerfile inside the "nodeapp" folder
-      context: ./tofwebapp
+      # Look for the Dockerfile inside the "webapp" folder
+      context: ./webapp
       dockerfile: alpine.Dockerfile
     restart: always
+
     ports:
-      - "80"
+      - "8080"
+   # volumes:
+   #   - ./../home/resource/data:/usr/src/workground/data
+    depends_on:
+      - dbmysql
+    links:
+      - dbmysql
+    environment:
+      - DATABASE_HOST=dbmysql
     networks:
       - front-tier
-  
+
   # Our replicas of the main "nodeapp", just so that NGINX can load-balance
   # E.g when there's a new version available of our app
   # We'll take each one of these 3 services done, update them and bring them back up 1-by-1
-  tofwebapp2:
-    extends:
-      service: tofwebapp
+  webapp2:
+    <<: *webapp1
+  #  extends:
+  #    service: webapp1
   
-  tofwebapp3:
-    extends:
-      service: tofwebapp
+  webapp3:
+    <<: *webapp1
   
   # NGINX will reverse proxy the express application
   nginx:
@@ -38,6 +47,26 @@ services:
         - "80:80"
     networks:
       - front-tier
+
+  dbmysql:
+    #image: mysql:8.0
+    build:  
+      context: ./mysql8.0
+      dockerfile: alpine.Dockerfile
+    restart: always
+    #container_name: mariadb10.3
+    #ports:
+    #  - "3364:3306"
+    networks:
+      - front-tier
+    environment:
+      - MYSQL_DATABASE=test
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test
+      - MYSQL_ROOT_PASSWORD=test
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./mysql8.0/conf.d:/etc/mysql/conf.d
 
 networks:
   front-tier:

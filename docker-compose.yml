@@ -57,10 +57,10 @@ services:
     networks:
       - front-tier
     #environment:
-    #  - MYSQL_DATABASE=web_tof
-    #  - MYSQL_USER=tofweb
-    #  - MYSQL_PASSWORD=tof2000
-    #  - MYSQL_ROOT_PASSWORD=tof1500TOF
+    #  - MYSQL_DATABASE=test
+    #  - MYSQL_USER=test
+    #  - MYSQL_PASSWORD=test
+    #  - MYSQL_ROOT_PASSWORD=test
     #  - TZ=Asia/Shanghai
     volumes:
       - ./mysql8.0/conf.d:/etc/mysql/conf.d
