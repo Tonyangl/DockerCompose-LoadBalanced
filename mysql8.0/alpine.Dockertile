@@ -1,0 +1,18 @@
+# Get the latest Alpine Image from https://hub.docker.com/
+FROM alpine:latest
+
+LABEL version="1.0"
+LABEL description="NGINX running on the Alpine image (5MB)"
+
+
+
+WORKDIR /app
+VOLUME /app
+COPY startup.sh /startup.sh
+
+
+RUN apk add --update mysql mysql-client && rm -f /var/cache/apk/*
+COPY ./conf.d/my.cnf /etc/mysql/my.cnf
+
+EXPOSE 3306
+CMD ["/startup.sh"]
